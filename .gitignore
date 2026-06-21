@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# 编辑器
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.project
+*.classpath
+.settings/
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.orig
+*.log
+
+# 生成输出
+output/
+gen_output/

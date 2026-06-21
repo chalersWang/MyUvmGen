@@ -1,0 +1,67 @@
+block RegModel_reg_top {
+      bytes 4;
+ register reg1 @ 'h0000{
+     left_to_right;
+       field RESERVED_12{
+                bits 20;
+                access ro;
+                reset   20'b0;
+            }
+       field RG1{
+                bits 1;
+                access wo;
+                reset   1'b0;
+            }
+       field RG2{
+                bits 10;
+                access rw;
+                reset   10'b0;
+            }
+       field RG3{
+                bits 1;
+                access wc;
+                reset   1'b0;
+            }
+}
+ register reg2 @ 'h0040{
+     left_to_right;
+       field RG1{
+                bits 17;
+                access ro;
+                reset   17'b0;
+            }
+       field RG2{
+                bits 1;
+                access wo;
+                reset   1'b0;
+            }
+       field RESERVED_1{
+                bits 13;
+                access ro;
+                reset   13'b0;
+            }
+       field RG3{
+                bits 1;
+                access wc;
+                reset   1'b0;
+            }
+}
+ register reg3 @ 'h0080{
+     left_to_right;
+       field RGRG{
+                bits 32;
+                access rw;
+                reset   32'b0;
+            }
+}
+ memory crg_mem @ 'h4000 {
+     bits 32;
+    size 4k;
+    access ro;
+    }
+ memory dma_mem @ 'h8000 {
+     bits 32;
+    size 16k;
+    access rw;
+    }
+}

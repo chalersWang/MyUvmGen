@@ -1,0 +1,5 @@
+AA      31:0      aa        RW      0x11    
+BB      30:27     bb0       RO      0x2       
+BB      26        bb1       RW      0x1 
+BB      4:3       bb2       RW      0x3 
+BB      0         bb3       RO      0x4 

@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>wxx Configuration Register Table</title>
+<style type="text/css">
+.tab_attr {
+    width: 80%;
+    margin: auto;
+}
+</style>
+</head>
+<body>
+<h1 align="center">wxx Configuration Register Table</h1>
+<table border="1" class="tab_attr">
+<tr>
+<th align="center">Address Offset</th>
+<th align="center">Register Name</th>
+<th align="center">Belong to Block</th>
+</tr>
+
+<tr>
+<td align="center">0x0</td>
+<td align="center"><a href="#0">record_mem0</a></td>
+<td align="center">wxx_block</td>
+</tr>
+
+<tr>
+<td align="center">0x4</td>
+<td align="center"><a href="#4">record_mem1</a></td>
+<td align="center">wxx_block</td>
+</tr>
+    
+
+
+<tr>
+<td align="center">0x400</td>
+<td align="center"><a href="#400">running_table0_31_0</a></td>
+<td align="center">wxx_block</td>
+</tr>
+
+<tr>
+<td align="center">0x404</td>
+<td align="center"><a href="#404">running_table0_63_32</a></td>
+<td align="center">wxx_block</td>
+</tr>
+
+
+</table>
+<br>
+<br>
+<table border="1" class="tab_attr">
+
+<tr>
+<th colspan="4" align="left"><a name="0"><font size="5">Register Name: record_mem0</font></a></th>
+</tr>
+<tr>
+<th colspan="4" align="left"><font size="5">Offset: 0x0</font></th>
+</tr>
+<tr>
+<th colspan="4" align="left"><font size="5">Block: ncc_block</font></th>
+</tr>
+<tr>
+<th>Bits</th>
+<th>Field Name</th>
+<th>Access</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>31:25</td>
+<td>reserved</td>
+<td></td>
+<td></td>
+</tr>
+
+<tr>
+<td>24:0</td>
+<td>record_mem0_data</td>
+<td>RO</td>
+<td><br>
+`uvm_info(get_full_name(),$sformatf("hello world"))<br>
+Value After Reset: 0x0</td>
+</tr>
+    
+
+<tr>
+<th colspan="4" align="left"><a name="400"><font size="5">Register Name: running_table0_31_0</font></a></th>
+</tr>
+<tr>
+<th colspan="4" align="left"><font size="5">Offset: 0x400</font></th>
+</tr>
+<tr>
+<th colspan="4" align="left"><font size="5">Block: ncc_block</font></th>
+</tr>
+<tr>
+<th>Bits</th>
+<th>Field Name</th>
+<th>Access</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>31:0</td>
+<td>running_table0_data_31_0</td>
+<td>RO</td>
+<td><br><br>
+Value After Reset: 0x0</td>
+</tr>
+
+    
+    
+
+    
