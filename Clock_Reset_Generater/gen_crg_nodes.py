@@ -1,5 +1,5 @@
 #***********************************************************
-# *  Copyright (C) 2023 by JakodYuan (JakodYuan@outlook.com).
+# *  Copyright (C) 2026 by ChalersWang (19910619333@189.cn).
 # *  All right reserved.
 #************************************************************
 
