@@ -45,7 +45,10 @@ interface svk_clk_interface(
     bit     glitch_check_en;
 
 
-    // 批量配置时钟参数: period, duty_ratio, jetter, ppm
+// ==============================================
+// 批量配置时钟参数: period / duty_ratio / jetter / ppm
+    // 配置后打印 UVM_INFO 日志
+// ==============================================
     function void set_cfg(real _period, real _duty_ratio=0.5, real _jetter=0, int _ppm=0);
         string log;
 
@@ -62,7 +65,11 @@ interface svk_clk_interface(
         `uvm_info("svk_clk_interface", log, UVM_NONE)
     endfunction
 
-    // 实测时钟周期和占空比: 采集 MEAN_CYCLE_NUM=10 个周期, 计算均值
+// ==============================================
+// 实测时钟周期和占空比
+    // 采集 10 个周期 (MEAN_CYCLE_NUM=10), 计算高/低电平均值
+    // 返回: _period=周期(ns), _duty_ratio=占空比(高/周期)
+// ==============================================
     task get_period_ratio(ref real _period, ref real _duty_ratio);
         string    log;
         parameter MEAN_CYCLE_NUM = 10;
@@ -104,7 +111,11 @@ interface svk_clk_interface(
         _duty_ratio = real_ratio;
     endtask
 
-    // 时钟校验: set_cfg → get_period_ratio → 对比期望 vs 实测, 超出容差报错
+// ==============================================
+// 时钟校验: set_cfg → get_period_ratio → 对比期望 vs 实测
+    // 容差: period ∈ [expe - jitter + ppm, expe + jitter + ppm]
+    // 超出容差 → UVM_ERROR
+// ==============================================
     task check(real _period, real _duty_ratio, real _jetter, int _ppm);
         string         log;
         automatic real real_period;
@@ -145,7 +156,11 @@ interface svk_clk_interface(
     endtask
 
 
-    // 毛刺检测: 监测高低脉冲宽度, 小于 period_th → UVM_ERROR
+// ==============================================
+// 毛刺检测: 监测高低脉冲宽度
+    // 脉冲宽度 < period_th → UVM_ERROR
+    // 使用 fork/join_none 持续监测, stop_check_glitch() 终止
+// ==============================================
     task check_glitch(real period_th);
         automatic realtime t1;
         automatic realtime t2;
@@ -175,13 +190,18 @@ interface svk_clk_interface(
     endtask
 
 
-    // 停止毛刺检测: 设置 glitch_check_en=0
+// ==============================================
+// 停止毛刺检测: glitch_check_en=0
+// ==============================================
     task stop_check_glitch();
         glitch_check_en = 0;
     endtask
 
 
-    // 检测时钟是否停止: 在 2×_period 内无时钟沿 → is_close=1
+// ==============================================
+// 检测时钟是否停止: 2×_period 内无时钟沿 → is_close=1
+    // 使用 fork join_any 实现超时机制
+// ==============================================
     task is_closed(real _period, ref bit is_close);
         fork
             begin
@@ -196,14 +216,19 @@ interface svk_clk_interface(
         disable fork;
     endtask
 
-    // 关闭时钟: 设置 close_clk=1, 等待当前周期完成后 release
+// ==============================================
+// 关闭时钟: close_clk=1 → wait(close_complete) → 握手完成
+// ==============================================
     task close();
         close_clk = 1;
         wait(close_complete);
         close_complete = 0;
     endtask
 
-    // 启动时钟: 与 svk_clk_if.drive() 类似, 产生带 jitter/ppm 波形
+// ==============================================
+// 启动时钟驱动: 与 svk_clk_if.drive() 类似
+    // 产生带 jitter/ppm 的波形, 支持 close_clk 停止
+// ==============================================
     task run();
         while(1)begin
 

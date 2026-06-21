@@ -33,13 +33,19 @@ interface svk_rst_if(
 
     import uvm_pkg::*;
 
-    // 释放复位: release rst, 解除 force 驱动使复位线回到硬件原始状态
+// ==============================================
+// 释放复位控制: release rst, 解除 force 驱动
+    // 效果: 复位线恢复到硬件原始驱动状态
+// ==============================================
     task undrive();
         release rst;
     endtask
 
-    // 驱动复位序列: force 1 → #up_time → force 0 → #down_time → force 1
-    // 模拟上电复位波形: 先释放(高), 复位激活(低), 再释放(高)
+// ==============================================
+// 驱动复位序列: force 1 → #up_time → force 0 → #down_time → force 1
+    // 模拟完整上电复位: 先释放 → 激活(复位) → 释放
+    // up_time=高电平时间(释放态), down_time=低电平时间(复位激活态)
+// ==============================================
     task drive();
         force rst = 1;
         #(up_time);
@@ -48,7 +54,10 @@ interface svk_rst_if(
         force rst = 1;
     endtask
 
-    // 强制设置复位值为指定值 (0=激活复位, 1=释放复位)
+// ==============================================
+// 强制设置复位为指定值
+    // rst_value=0: 激活复位(下拉), rst_value=1: 释放复位(上拉)
+// ==============================================
     task set_rst(input logic rst_value);
         force rst = rst_value;
     endtask

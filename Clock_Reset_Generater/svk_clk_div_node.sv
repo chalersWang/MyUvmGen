@@ -22,14 +22,19 @@
 class svk_clk_div_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_div_node)
 
-    // 构造函数: 直接委托给 svk_clk_node::new()
+// ==============================================
+// 构造函数: 委托 svk_clk_node::new()
+// ==============================================
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 计算分频后期望时钟: period = pre_period × (div + 1)
+// ==============================================
+// [override] 计算分频后期望时钟
+    // period = pre_period × (div + 1)
     // div 从 reg_fields["div"] 或 hdl_paths["div"] 读取
-    // 占空比固定为 50%
+    // 占空比固定 50%
+// ==============================================
     task get_expe_clk(output real period, output real duty_ratio);
         real pre_duty_ratio;
         real pre_period;

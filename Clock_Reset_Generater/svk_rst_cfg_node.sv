@@ -23,14 +23,19 @@
 class svk_rst_cfg_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_cfg_node)
 
-    // 构造函数: 直接委托给 svk_rst_node::new()
+// ==============================================
+// 构造函数: 委托 svk_rst_node::new()
+// ==============================================
     function new(string name="svk_rst_cfg_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 计算可配置复位期望值: rst = pre_rst & cfg_bit
+// ==============================================
+// [override] 计算可配置复位期望值
+    // rst = pre_rst & cfg_bit
     // cfg_bit 从 reg_fields["cfg"] 或 hdl_paths["cfg"] 读取
-    // cfg_bit=0 → 复位被屏蔽 (始终高), cfg_bit=1 → 透传 pre_rst
+    // cfg_bit=0 → 复位被屏蔽(强制高), cfg_bit=1 → 透传 pre_rst
+// ==============================================
     task get_expe_rst(output logic rst);
         logic           pre_rst;
         bit             cfg_rst;

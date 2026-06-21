@@ -35,14 +35,21 @@ class crg_nodes extends uvm_component;
     svk_rst_node   rst_nodes[string];
     xxx_reg_block  model;// nead to modify
     
-    // UVM 构造函数: 调用 super.new() 传递 name 和 parent
+// ==============================================
+// UVM 构造函数: 调用 super.new()
+// ==============================================
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
     
-    // UVM build_phase: 创建所有时钟/复位节点实例 + 配置 cfg 对象
-    // 建立节点有向图 (cfg.node_numbers[]), 绑定寄存器模型 (reg_fields)
-    // 以及 HDL 路径 (hdl_paths), 设置末端节点标记 (is_end_point)
+// ==============================================
+// UVM build_phase: 创建所有时钟/复位节点实例 + 配置 cfg
+    // 1. create 各节点 (clk_nodes[string] / rst_nodes[string])
+    // 2. 绑定 svk_clk_if / svk_rst_if 虚接口
+    // 3. 设置 freq/duty/jitter/ppm/reg_field/hdl_path 等配置
+    // 4. 建立节点间有向连接 (cfg.node_numbers[])
+    // 5. 标记末端节点 (is_end_point=1 用于校验)
+// ==============================================
     function void build_phase(uvm_phase phase);
         clk_nodes["node1"] = svk_clock_drv_node::type_id::create("clk_node1", this);
         clk_nodes["node2"] = svk_clock_drv_node::type_id::create("clk_node2", this);
@@ -185,16 +192,20 @@ class crg_nodes extends uvm_component;
     
     endfunction
     
-    // 时钟校验入口: 遍历所有 is_end_point=1 的时钟节点, 递归调用 check_clk()
-    // 校验内容: 周期、占空比是否在 jitter/ppm 容差范围内
+// ==============================================
+// 时钟校验入口: 遍历 is_end_point=1 的时钟节点, 递归调用 check_clk()
+    // 校验: 周期、占空比是否在 jitter/ppm 容差范围内
+// ==============================================
     task check_clk();
         foreach(clk_nodes[i])begin
             if(clk_nodes[i].cfg.is_end_point)
                 clk_nodes[i].check_clk();
         end
     endtask
-    // 复位校验入口: 遍历所有 is_end_point=1 的复位节点, 递归调用 check_rst()
-    // 校验内容: 复位值与期望值是否一致
+// ==============================================
+// 复位校验入口: 遍历 is_end_point=1 的复位节点, 递归调用 check_rst()
+    // 校验: 实际复位值与期望值是否一致
+// ==============================================
     task check_rst();
         foreach(rst_nodes[i])begin
             if(rst_nodes[i].cfg.is_end_point)

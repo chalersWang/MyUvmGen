@@ -19,13 +19,18 @@
 class svk_rst_sel_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_sel_node)
 
-    // 构造函数: 直接委托给 svk_rst_node::new()
+// ==============================================
+// 构造函数: 委托 svk_rst_node::new()
+// ==============================================
     function new(string name="svk_rst_sel_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 计算选择器输出期望复位: sel=0 → pre_nodes[0], sel=1 → pre_nodes[1]
+// ==============================================
+// [override] 计算选择器输出期望复位
+    // sel=0 → pre_nodes[0], sel=1 → pre_nodes[1]
     // sel 从 reg_fields["sel"] 或 hdl_paths["sel"] 读取
+// ==============================================
     task get_expe_rst(output sel rst);
         bit             sel;
 

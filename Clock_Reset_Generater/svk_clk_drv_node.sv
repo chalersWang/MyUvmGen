@@ -22,20 +22,28 @@
 class svk_clk_drv_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_drv_node)
 
-    // 构造函数: 直接委托给 svk_clk_node::new()
+// ==============================================
+// 构造函数: 委托 svk_clk_node::new()
+// ==============================================
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 计算期望时钟: 驱动源节点直接返回 ci.period / ci.duty_ratio
-    // 无需递归 (驱动源是时钟树的根节点)
+// ==============================================
+// [override] 计算驱动源期望时钟
+    // 驱动源是时钟树根节点, 直接返回 ci.period / ci.duty_ratio
+    // 无需递归 (无前驱节点)
+// ==============================================
     task get_expe_clk(output real period, output real duty_ratio);
         period      = cfg.ci.period;
         duty_ratio  = cfg.ci.duty_ratio;
         `uvm_info("get_expe_clk", $sformatf("%s:period=%0f, duty_ratio=%0f",get_name(), period, duty_ratio), UVM_HIGH)
     endtask
 
-    // 驱动源无前驱节点: 调用此方法会报 UVM_ERROR (时钟树根节点不允许取前驱)
+// ==============================================
+// [override] 驱动源无前驱节点
+    // 调用此方法 → UVM_ERROR (根节点禁止获取前驱)
+// ==============================================
     function svk_clk_node get_pre_node();
         `uvm_error("get_pre_node", "should not call this function")
         return null;

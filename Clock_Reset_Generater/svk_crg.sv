@@ -24,10 +24,12 @@
 virtual svk_clk_if clk_ifs[string];
 virtual svk_rst_if rst_ifs[string];
 
-    // 通配符匹配查找 svk_clk_if 接口
+// ==============================================
+// 通配符匹配查找 svk_clk_if 接口
     // 输入: wildcard_path — 支持 * 和 ? 通配符的层级路径
     // 返回: 唯一匹配的 svk_clk_if 虚接口
-    // 异常: 匹配0个或>1个时打印 UVM_ERROR + 全部列表
+    // 异常: 匹配0个或>1个 → UVM_ERROR + 详细列表
+// ==============================================
 function virtual svk_clk_if get_clk_if(string wildcard_path);
     virtual svk_clk_if ci_q[$];
 
@@ -56,10 +58,12 @@ function virtual svk_clk_if get_clk_if(string wildcard_path);
     end
 endfunction
 
-    // 通配符匹配查找 svk_rst_if 接口
+// ==============================================
+// 通配符匹配查找 svk_rst_if 接口
     // 输入: wildcard_path — 支持 * 和 ? 通配符的层级路径
     // 返回: 唯一匹配的 svk_rst_if 虚接口
-    // 异常: 匹配0个或>1个时打印 UVM_ERROR + 全部列表
+    // 异常: 匹配0个或>1个 → UVM_ERROR + 详细列表
+// ==============================================
 function virtual svk_rst_if get_rst_if(string wildcard_path);
     virtual svk_rst_if ri_q[$];
 

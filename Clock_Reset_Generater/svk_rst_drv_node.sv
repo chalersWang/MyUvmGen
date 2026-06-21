@@ -21,12 +21,17 @@
 class svk_rst_drv_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_drv_node)
 
-    // 构造函数: 直接委托给 svk_rst_node::new()
+// ==============================================
+// 构造函数: 委托 svk_rst_node::new()
+// ==============================================
     function new(string name="svk_rst_drv_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 计算期望复位值: 驱动源直接返回 ri.rst (物理接口实际值)
+// ==============================================
+// [override] 计算驱动源期望复位值
+    // 直接返回物理接口 ri.rst 的当前值 (驱动源是根节点)
+// ==============================================
     task get_expe_rst(output logic rst);
         rst = cfg.ri.rst;
         `uvm_info("get_expe_rst", $sformatf("%s: rst=%0b",get_name(),  rst), UVM_NONE)

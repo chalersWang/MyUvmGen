@@ -28,45 +28,37 @@ virtual class svk_rst_node extends uvm_component;
 
     svk_rst_node_cfg       cfg;
 
-    // 构造函数: 实例化 cfg 配置对象 (svk_rst_node_cfg)
     extern function new(string name="svk_rst_node", uvm_component parent=null);
-    // [纯虚方法] 计算期望复位值 (子类必须实现)
-    // drv_node: ri.rst   cfg_node: pre_rst & cfg_bit   and_node: 多输入 AND
-    // sel_node: 选择前驱   sync_node/wire_node: 透传
     pure virtual task get_expe_rst(output logic rst);
-    // 读取实际复位值: 从物理接口 ri.rst 直接取值
     extern virtual task get_real_rst(output logic rst);
-    // 复位值校验: 对比期望 vs 实际复位值, 不匹配 → UVM_ERROR
     extern task check_rst();
-    // 毛刺检测: 监测高/低脉冲宽度是否小于 glitch_high_th/glitch_low_th
-    // 检测到毛刺 → UVM_ERROR
     extern task check_glitch();
-    // 同步校验: 检测复位释放沿 (posedge rst) 与时钟沿 (posedge clk) 的时间差
-    // 时间差 > sync_ignore_th → UVM_ERROR (未同步)
     extern task check_sync();
-    // 强制设置复位: 委托给 cfg.ri.set_rst()
     extern task set_rst(input logic rst);
-    // UVM run_phase: fork 启动 drive + glitch_check + sync_check
-    // is_active=1 → cfg.ri.drive()
-    // glitch_check_en=1 → check_glitch()
-    // sync_check_en=1 → check_sync()
     extern task run_phase(uvm_phase phase);
 
 endclass
 
-    // 构造函数实现: 调用 super.new() 并创建 cfg 配置对象
+// ==============================================
+// 构造函数: 调用 super.new() 并创建 cfg 配置对象 (svk_rst_node_cfg)
+// ==============================================
 function svk_rst_node::new(string name="svk_rst_node", uvm_component parent=null);
     super.new(name, parent);
 
     cfg = new();
 endfunction
 
-    // 读取实际复位值实现: rst = cfg.ri.rst
+// ==============================================
+// 读取实际复位值: 直接从物理接口 ri.rst 取值
+// ==============================================
 task svk_rst_node::get_real_rst(output logic rst);
     rst = cfg.ri.rst;
 endtask
 
-    // 复位校验实现 (详见声明处注释)
+// ==============================================
+// 复位值校验: get_expe_rst → get_real_rst → 对比
+    // 不一致 → UVM_ERROR
+// ==============================================
 task svk_rst_node::check_rst();
     logic expe_rst;
     logic real_rst;
@@ -79,7 +71,12 @@ task svk_rst_node::check_rst();
     end
 endtask
 
-    // 毛刺检测实现: fork 两个 while(1) 分别监测高/低毛刺 (详见声明处注释)
+// ==============================================
+// 毛刺检测: fork 两个 while(1) 分别监测高/低脉冲宽度
+    // 高脉冲 < glitch_high_th → UVM_ERROR
+    // 低脉冲 < glitch_low_th  → UVM_ERROR
+    // 仅在 glitch_check_en=1 时使能
+// ==============================================
 task svk_rst_node::check_glitch();
     if(cfg.glitch_check_en)begin
         fork
@@ -106,7 +103,11 @@ task svk_rst_node::check_glitch();
 endtask
 
 
-    // 同步校验实现: fork 分别监测 clk posedge 和 rst posedge (详见声明处注释)
+// ==============================================
+// 同步校验: fork 分别监测 clk posedge 和 rst posedge
+    // |t_rst_posedge - t_clk_posedge| > sync_ignore_th → UVM_ERROR
+    // 仅在 sync_check_en=1 时使能
+// ==============================================
 task svk_rst_node::check_sync();
     real t1,t2;
     if(cfg.sync_check_en)begin
@@ -128,12 +129,19 @@ task svk_rst_node::check_sync();
 endtask
 
 
-    // 设置复位实现: 委托 cfg.ri.set_rst()
+// ==============================================
+// 强制设置复位: 委托 cfg.ri.set_rst(rst)
+// ==============================================
 task svk_rst_node::set_rst(input logic rst);
     cfg.ri.set_rst(rst);
 endtask
 
-    // run_phase 实现 (详见声明处注释)
+// ==============================================
+// UVM run_phase: fork 并行启动复位驱动 + 毛刺检测 + 同步校验
+    // is_active=1 → cfg.ri.drive()
+    // glitch_check_en=1 → check_glitch()
+    // sync_check_en=1 → check_sync()
+// ==============================================
 task svk_rst_node::run_phase(uvm_phase phase);
     fork
         if(cfg.is_active)begin

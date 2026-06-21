@@ -21,13 +21,18 @@
 class svk_rst_sync_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_sync_node)
 
-    // 构造函数: 直接委托给 svk_rst_node::new()
+// ==============================================
+// 构造函数: 委托 svk_rst_node::new()
+// ==============================================
     function new(string name="svk_rst_sync_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
-    // 透传前驱期望复位: 直接委托给 pre_nodes[0].get_expe_rst()
-    // 通常配合 cfg.sync_check_en=1 启用同步校验
+// ==============================================
+// [override] 透传前驱期望复位
+    // 直接委托 pre_nodes[0].get_expe_rst()
+    // 通常配合 cfg.sync_check_en=1 + cfg.ci 进行同步校验
+// ==============================================
     task get_expe_rst(output logic rst);
         cfg.pre_nodes[0].get_expe_rst(rst);
         `uvm_info("get_expe_rst", $sformatf("%s: rst=%0b",get_name(),  rst), UVM_NONE)
