@@ -21,10 +21,12 @@
 class svk_rst_wire_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_wire_node)
 
+    // 构造函数: 直接委托给 svk_rst_node::new()
     function new(string name="svk_rst_wire_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 透传前驱期望复位: 直接委托给 pre_nodes[0].get_expe_rst()
     task get_expe_rst(output logic rst);
         cfg.pre_nodes[0].get_expe_rst(rst);
         `uvm_info("get_expe_rst", $sformatf("%s: rst=%0b",get_name(),  rst), UVM_NONE)

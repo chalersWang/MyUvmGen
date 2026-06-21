@@ -51,12 +51,16 @@ interface svk_clk_if(
 
     import uvm_pkg::*;
 
+    // 停止时钟驱动: 设置 stop_clk 标志, 等待当前周期完成后 release 时钟线
     task undrive();
         stop_clk = 1;
         wait(stop_complete);
         stop_complete = 0;
     endtask
 
+    // 启动时钟驱动: 使用 force/release 产生带 jitter/ppm 的非理想时钟波形
+    // 驱动算法: 两个半周期为一组, 第1组+抖动, 第2组-抖动, 循环往复
+    // 校验: period ∈ (0, 10^7], duty_ratio ∈ (0,1), jetter ∈ (0,1)
     task drive();
         automatic real    ppm_time;
         automatic real    jetter_time;

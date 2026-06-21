@@ -30,10 +30,15 @@
 class svk_clk_pll_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_pll_node)
 
+    // 构造函数: 直接委托给 svk_clk_node::new()
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 计算 PLL 期望时钟: 读取 reg_fields/hdl_paths 中的 PLL 参数
+    // DSM 关闭: period = pre_period × refdiv / fbdiv
+    // DSM 使能: period = pre_period × refdiv / (fbdiv + frac/2^24)
+    // PLL 未 lock → UVM_ERROR
     task get_expe_clk(output real period, output real duty_ratio);
         int     values[string] = '{"lock":0, "dsmen":0, "frac":0, "refdiv":0, "fbdiv":0, "postdiv1":0, "postdiv2":0};
 

@@ -39,6 +39,8 @@ from collections import namedtuple
 from datetime import datetime
 
 
+    # 生成单个时钟节点的 cfg 配置代码
+    # 根据 Excel 行数据, 写入 clk_nodes["nodeN"].cfg.* 赋值语句
 def gen_clk_cfg(line_idx, line, fid):
     fid.writelines('        clk_nodes["node' + str(int(line.node_number)) + '"].cfg.ci = clk_ifs["u_clk_if' + str(int(line.node_number)) + '"];\n')
     if line.pre_node != None:
@@ -90,6 +92,8 @@ def gen_clk_cfg(line_idx, line, fid):
     fid.writelines('\n')
 
 
+    # 生成单个复位节点的 cfg 配置代码
+    # 根据 Excel 行数据, 写入 rst_nodes["nodeN"].cfg.* 赋值语句
 def gen_rst_cfg(line_idx, line, fid):
     fid.writelines('        rst_nodes["node' + str(int(line.node_number)) + '"].cfg.ri = rst_ifs["u_rst_if' + str(int(line.node_number)) + '"];\n')
     if line.pre_node != None:
@@ -139,6 +143,8 @@ def gen_rst_cfg(line_idx, line, fid):
     fid.writelines('\n')
 
 
+    # 生成 crg_nodes.sv 文件头部
+    # 写入 class 声明、`uvm_component_utils、字段声明、new() 和 build_phase() 开头
 def gen_file_head(wid):
     wid.writelines('')
     wid.writelines('')
@@ -156,6 +162,9 @@ def gen_file_head(wid):
     wid.writelines('\n')
     wid.writelines('    function void build_phase(uvm_phase phase);\n')
 
+    # 生成所有节点的 create 实例化代码 + cfg 配置代码
+    # 遍历 CLK sheet 每个 gen_en=1 的行, 调用 gen_clk_cfg()
+    # 遍历 RST sheet 每个 gen_en=1 的行, 调用 gen_rst_cfg()
 def gen_crg_nodes(clk_lines, rst_lines, wid):
     for line in clk_lines:
         if line.node_type != None and line.gen_en == 1:
@@ -179,6 +188,8 @@ def gen_crg_nodes(clk_lines, rst_lines, wid):
 
 
 
+    # 生成 crg_nodes.sv 文件尾部
+    # 写入 check_clk() / check_rst() 任务和 endclass
 def gen_file_tail(wid):
     wid.writelines('\n')
     wid.writelines('    endfunction\n')
@@ -199,6 +210,8 @@ def gen_file_tail(wid):
 
 
 
+    # 生成 crg_if_inst.sv 文件
+    # 写入所有 svk_clk_if / svk_rst_if 实例化 + initial 块注册到全局关联数组
 def gen_clk_ifs(clk_lines, rst_lines, wid):
     i = 0
     for line in clk_lines:
@@ -228,6 +241,8 @@ def gen_clk_ifs(clk_lines, rst_lines, wid):
     wid.writelines('    end\n')
 
 
+    # 主函数: 打开 crg_nodes.xlsm, 读取 CLK/RST sheet, 生成 .sv 输出文件
+    # 流程: xlwings 读 Excel → 构建 namedtuple 数据 → gen_file_head → gen_crg_nodes → gen_file_tail → gen_clk_ifs
 def main():
     crg_nodes_fid = open(sys.path[0] + "/crg_nodes.sv", "w")
     if_inst_fid = open(sys.path[0] + "/crg_if_inst.sv", "w")

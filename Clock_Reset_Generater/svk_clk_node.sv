@@ -37,17 +37,37 @@ virtual class svk_clk_node extends uvm_component;
 
     svk_clk_node_cfg       cfg;
 
+    // 构造函数: 实例化 cfg 配置对象 (svk_clk_node_cfg)
     extern function new(string name="svk_clk_node", uvm_component parent=null);
+    // [纯虚方法] 计算期望时钟周期和占空比 (子类必须实现)
+    // drv_node: 直接返回 ci.period / ci.duty_ratio
+    // pll_node: 递归+寄存器计算   div_node: pre_period×(div+1)
+    // sel_node: 选择前驱   gate_node: gate=0→period=0   wire_node: 透传
     pure virtual task get_expe_clk(output real period, output real duty_ratio);
+    // 从物理接口实测时钟参数: 采集 MEAN_CYCLE_NUM 个周期, 计算均值和占空比
+    // time_out_time: 超时时间 (默认 1000ns), 超时返回 period=0
     extern virtual task get_real_clk(output real period, output real duty_ratio, input int time_out_time=1000, input int MEAN_CYCLE_NUM=1);
+    // 时钟校验: 对比期望 vs 实测周期/占空比
+    // 容差范围: period ∈ [expe - jitter + ppm, expe + jitter + ppm]
+    //           duty_ratio ∈ [expe - jitter, expe + jitter]
+    // 超出容差 → UVM_ERROR
     extern task check_clk();
+    // 毛刺检测: 连续监测相邻半周期宽度变化
+    // 若相邻高/低半周期在前一个周期的 jitter/ppm 容差范围外 → UVM_ERROR
     extern task check_glitch();
+    // 动态切换时钟频率: 从 freqs[] 列表中选择下一个频率
+    // freq=-1 → 随机选择; freq!=-1 → 指定频率 (必须在 freqs[] 内)
     extern task set_next_freq(input real freq=-1);
+    // UVM run_phase: fork 启动 clock drive + glitch check
+    // is_active=1 → 调用 set_next_freq() 设置参数 + ci.drive() 驱动
+    // glitch_check_en=1 → 启动 check_glitch()
     extern task run_phase(uvm_phase phase);
+    // 获取默认前驱节点: 返回 pre_nodes[0]
     extern virtual function svk_clk_node get_pre_node();
 
 endclass
 
+    // 构造函数实现: 调用 super.new() 并创建 cfg 配置对象
 function svk_clk_node::new(string name="svk_clk_node", uvm_component parent);
     super.new(name, parent);
 
@@ -55,6 +75,7 @@ function svk_clk_node::new(string name="svk_clk_node", uvm_component parent);
 endfunction
 
 
+    // 实测时钟参数实现 (详见声明处注释)
 task svk_clk_node::get_real_clk(output real period, output real duty_ratio, input int time_out_time=1000, input int MEAN_CYCLE_NUM=1);
     string          log;
     real            all_h_time;
@@ -104,6 +125,7 @@ task svk_clk_node::get_real_clk(output real period, output real duty_ratio, inpu
 
 endtask
 
+    // 时钟校验实现: get_expe_clk → get_real_clk → 对比检查 (详见声明处注释)
 task svk_clk_node::check_clk();
     string         log;
     real real_period;
@@ -148,6 +170,7 @@ task svk_clk_node::check_clk();
 
 endtask
 
+    // 毛刺检测实现: 对比 pre_pre_h、pre_h、cur_h 三个连续半周期的宽度 (详见声明处注释)
 task svk_clk_node::check_glitch();
     real jetter_time;
     real ppm_time;
@@ -233,6 +256,7 @@ task svk_clk_node::check_glitch();
     end
 endtask
 
+    // 频率切换实现: 选中频率 → ci.period = 1000/freq (详见声明处注释)
 task svk_clk_node::set_next_freq(input real freq = -1);
     int idx;
     if(freq == -1)begin
@@ -255,6 +279,7 @@ task svk_clk_node::set_next_freq(input real freq = -1);
 endtask
 
 
+    // run_phase 实现 (详见声明处注释)
 task svk_clk_node::run_phase(uvm_phase phase);
 
     fork
@@ -273,6 +298,7 @@ task svk_clk_node::run_phase(uvm_phase phase);
 endtask
 
 
+    // 获取默认前驱节点: 返回 cfg.pre_nodes[0]
 function svk_clk_node svk_clk_node::get_pre_node();
     return cfg.pre_nodes[0];
 endfunction

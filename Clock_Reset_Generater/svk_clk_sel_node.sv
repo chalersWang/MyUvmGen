@@ -22,10 +22,13 @@
 class svk_clk_sel_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_sel_node)
 
+    // 构造函数: 直接委托给 svk_clk_node::new()
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 计算选择器输出期望时钟: sel=0 → pre_nodes[0], sel=1 → pre_nodes[1]
+    // sel 从 reg_fields["sel"] 或 hdl_paths["sel"] 读取
     task get_expe_clk(output real period, output real duty_ratio);
         bit sel;
 
@@ -44,6 +47,7 @@ class svk_clk_sel_node extends svk_clk_node;
         `uvm_info("get_expe_clk", $sformatf("%s:sel=%0b, period=%0f, duty_ratio=%0f",get_name(), sel, period, duty_ratio), UVM_HIGH)
     endtask
 
+    // 获取当前选中的前驱节点: 根据 sel 值返回 pre_nodes[0] 或 pre_nodes[1]
     function svk_clk_node get_pre_node();
         int sel;
 

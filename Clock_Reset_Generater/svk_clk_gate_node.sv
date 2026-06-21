@@ -22,10 +22,13 @@
 class svk_clk_gate_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_gate_node)
 
+    // 构造函数: 直接委托给 svk_clk_node::new()
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 计算门控后期望时钟: gate=0 → period=0 (时钟关闭), gate=1 → 透传前驱
+    // gate 从 reg_fields["gate"] 或 hdl_paths["gate"] 读取
     task get_expe_clk(output real period, output real duty_ratio);
         bit gate;
         uvm_status_e status;
@@ -46,6 +49,8 @@ class svk_clk_gate_node extends svk_clk_node;
         `uvm_info("get_expe_clk", $sformatf("%s:gate=%0b, period=%0f, duty_ratio=%0f",get_name(), gate, period, duty_ratio), UVM_HIGH)
     endtask
 
+    // 重写实测时钟方法: 当时钟关闭时, 沿前驱链回溯找到第一个有效时钟的节点
+    // 以其周期设置超时等待时间 (pre_period × 10 + 1), 避免无限等待
     task get_real_clk(output real period, output real duty_ratio, input int time_out_time=1000, input int MEAN_CYCLE_NUM=1);
         svk_clk_node  pre_node;
         real            pre_period;

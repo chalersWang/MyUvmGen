@@ -21,10 +21,12 @@
 class svk_clk_wire_node extends svk_clk_node;
     `uvm_component_utils(svk_clk_wire_node)
 
+    // 构造函数: 直接委托给 svk_clk_node::new()
     function new(string name="", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 透传前驱期望时钟: 直接委托给 pre_nodes[0].get_expe_clk()
     task get_expe_clk(output real period, output real duty_ratio);
         cfg.pre_nodes[0].get_expe_clk(period, duty_ratio);
         `uvm_info("get_expe_clk", $sformatf("%s:period=%0f, duty_ratio=%0f",get_name(),  period, duty_ratio), UVM_HIGH)

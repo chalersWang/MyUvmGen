@@ -29,14 +29,17 @@ interface svk_rst_interface(
 
     import uvm_pkg::*;
 
+    // 上拉复位: force rst = 1 (释放复位)
     function void pull_up();
         force rst = 1;
     endfunction
 
+    // 下拉复位: force rst = 0 (激活复位)
     function void pull_down();
         force rst = 0;
     endfunction
 
+    // 释放复位控制: release rst (解除 force 驱动)
     function void release_rst();
         release rst;
     endfunction
@@ -54,25 +57,31 @@ interface svk_rst_interface(
         join_none
     endtask
 
+    // 查询复位是否在释放状态 (高电平)
     function bit is_pull_up();
         return rst == 1;
     endfunction
 
+    // 查询复位是否在激活状态 (低电平)
     function bit is_pull_down();
         return rst == 0;
     endfunction
 
+    // 等待复位释放: 阻塞直到 posedge rst
     task wait_pull_up();
         @(posedge rst);
         `uvm_info("wait_pull_up", $sformatf("%s pull up", rst_hire), UVM_NONE)
     endtask
 
+    // 等待复位激活: 阻塞直到 negedge rst
     task wait_pull_down();
         @(negedge rst);
         `uvm_info("wait_pull_down", $sformatf("%s pull down", rst_hire), UVM_NONE)
     endtask
 
 
+    // 检测复位与时钟的同步关系: 对比 posedge rst 和 posedge clk 的时间差
+    // 时间差 < th → is_syn=1 (同步), 否则 is_syn=0 (异步)
     task is_syn_with(virtual svk_clk_interface ci, output bit is_syn, real th = 0);
         realtime    pll_up_time;
         realtime    clk_edge_time;

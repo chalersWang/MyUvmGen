@@ -27,10 +27,14 @@
 class svk_rst_and_node extends svk_rst_node;
     `uvm_component_utils(svk_rst_and_node)
 
+    // 构造函数: 直接委托给 svk_rst_node::new()
     function new(string name="svk_rst_and_node", uvm_component parent);
         super.new(name, parent);
     endfunction
 
+    // 计算 AND 复位期望值: 所有前驱节点 AND 所有 hdl_paths AND 所有 reg_fields
+    // rst = pre[0] & pre[1] & ... & hdl[a] & hdl[b] & ... & reg[x] & reg[y] & ...
+    // 任意输入为 0 → 输出为 0 (硬件与门行为)
     task get_expe_rst(output and rst);
         logic           pre_rst;
         logic           tmp;
