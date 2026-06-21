@@ -3,6 +3,18 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_rst_sync_node
+// 功能概述: 同步复位节点 (Synchronous Reset Node)
+//           直接透传前驱节点的复位值，通常在 cfg 中配置 sync_check_en=1
+//           以自动检测复位释放是否与时钟同步。
+// 继承自:   svk_rst_node
+// 特点:
+//   - get_expe_rst() 直接委托给 pre_nodes[0].get_expe_rst()
+//   - 配合 cfg.ci (时钟接口) 和 cfg.sync_check_en 进行同步校验
+// ============================================================================
+
 `ifndef SVK_RST_SYNC_NODE__SV
 `define SVK_RST_SYNC_NODE__SV
 

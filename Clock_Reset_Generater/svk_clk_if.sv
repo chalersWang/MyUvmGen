@@ -3,6 +3,29 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_clk_if
+// 功能概述: 时钟物理接口 (Clock Interface)
+//           使用 force/release 语句物理驱动 DUT 时钟线，模拟实际时钟行为。
+//           支持周期(period)、占空比(duty_ratio)、抖动(jitter)、
+//           频率偏差(ppm)、初始相位偏移(offset)配置。
+// 接口信号:
+//   clk      (inout) — 驱动的时钟线
+//   clk_hire (input string) — 时钟的层级路径名, 用于日志和随机种子
+// 关键参数:
+//   period / duty_ratio / jetter / ppm / offset — 时钟物理属性
+//   stop_clk  / stop_complete — 停止时钟的控制/握手信号
+// 关键任务:
+//   drive()    — 启动时钟驱动 (force 波形生成循环)
+//   undrive()  — 停止时钟并 release 时钟线
+// 驱动算法:
+//   - 第1对半周期: PERIOD_L+ppm+jitter, PERIOD_H+ppm+jitter
+//   - 第2对半周期: PERIOD_L+ppm-jitter, PERIOD_H+ppm-jitter
+//   - 循环产生非理想时钟效应
+// 参数校验: period ∈ (0, 10^7], duty_ratio ∈ (0,1), jetter ∈ (0,1)
+// ============================================================================
+
 `ifndef SVK_CLK_IF__SV
 `define SVK_CLK_IF__SV
 

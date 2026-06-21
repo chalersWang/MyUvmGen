@@ -4,6 +4,21 @@
 ************************************************************/
 
 
+
+// ============================================================================
+// 模块名称: svk_rst_interface (Legacy 版本)
+// 功能概述: 旧版复位接口
+//           功能与 svk_rst_if 类似，额外提供:
+//           - init()             初始化复位序列 (pull_up → delay → pull_down → delay → pull_up)
+//           - is_pull_up()       查询复位是否在释放状态 (高电平)
+//           - is_pull_down()     查询复位是否在激活状态 (低电平)
+//           - wait_pull_up()     等待复位释放 (等 posedge)
+//           - wait_pull_down()   等待复位激活 (等 negedge)
+//           - is_syn_with(ci)    检测复位与时钟是否同步
+// 注意:
+//   新项目推荐使用 svk_rst_if + svk_rst_node 体系。
+// ============================================================================
+
 `ifndef SVK_RST_INTERFACE__SV
 `define SVK_RST_INTERFACE__SV
 

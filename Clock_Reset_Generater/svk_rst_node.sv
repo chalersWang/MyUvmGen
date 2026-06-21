@@ -3,6 +3,24 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_rst_node (Abstract Virtual Class)
+// 功能概述: 复位节点抽象基类
+//           所有具体复位节点 (drv/cfg/and/sel/sync/wire) 的公共基类。
+//           定义统一接口: get_expe_rst(), get_real_rst(), check_rst(),
+//           check_glitch(), check_sync(), set_rst(), run_phase()。
+// 纯虚方法 (子类必须实现):
+//   get_expe_rst(rst)  — 计算期望复位值
+// 公共方法 (基类实现):
+//   get_real_rst(rst)  — 从物理接口读取实际复位值
+//   check_rst()        — 对比期望复位值 vs 实际复位值, 不匹配报 UVM_ERROR
+//   check_glitch()     — 监测复位毛刺 (高/低脉冲宽度 < glitch_high_th/glitch_low_th)
+//   check_sync()       — 检测复位释放是否与时钟同步 (posedge rst 与 posedge clk 时间差)
+//   set_rst(rst)       — 强制设置复位值
+//   run_phase()        — UVM run_phase: 启动 drive + glitch_check + sync_check
+// ============================================================================
+
 `ifndef SVK_RST_NODE__SV
 `define SVK_RST_NODE__SV
 

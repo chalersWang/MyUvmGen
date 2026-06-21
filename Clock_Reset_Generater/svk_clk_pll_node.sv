@@ -3,6 +3,27 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_clk_pll_node
+// 功能概述: PLL 锁相环时钟节点 (PLL Node)
+//           模拟 PLL 行为，从寄存器模型读取 PLL 分频系数，递归获取前驱节点
+//           时钟参数，计算出 PLL 输出时钟的期望周期和占空比。
+// 继承自:   svk_clk_node
+// 关键寄存器域 (reg_fields[] 或 hdl_paths[]):
+//   lock     — PLL 锁定标志 (1=已锁定才能计算)
+//   dsmen    — DSM (Delta-Sigma Modulator) 使能
+//   refdiv   — 参考时钟分频系数
+//   fbdiv    — 反馈分频系数 (整数部分)
+//   frac     — 反馈分频系数 (小数部分, 24位精度)
+//   postdiv1 — 后分频器1
+//   postdiv2 — 后分频器2
+// 计算公式:
+//   DSM关闭: period = pre_period × refdiv / fbdiv
+//   DSM使能: period = pre_period × refdiv / (fbdiv + frac / 2^24)
+//   若 PLL 未 lock → UVM_ERROR
+// ============================================================================
+
 `ifndef SVK_CLK_PLL_NODE__SV
 `define SVK_CLK_PLL_NODE__SV
 

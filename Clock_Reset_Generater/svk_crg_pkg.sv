@@ -3,6 +3,22 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_crg_pkg
+// 功能概述: Clock & Reset Generator 顶层 Package
+//           聚合所有时钟和复位节点类的包，在 package 作用域内 `include 所有
+//           class 定义文件和 interface 文件，是 CRG 验证组件库的入口。
+// 包含内容:
+//   接口层:  svk_clk_if, svk_rst_if
+//   配置层:  svk_clk_node_cfg, svk_rst_node_cfg
+//   基类层:  svk_clk_node, svk_rst_node
+//   时钟节点: drv_node, pll_node, div_node, sel_node, gate_node, wire_node
+//   复位节点: drv_node, cfg_node, and_node, sel_node, sync_node, wire_node
+//   编排层:  svk_crg, crg_nodes
+// 依赖:      uvm_pkg (UVM 1.2)
+// ============================================================================
+
 `ifndef SVK_CRG_PKG__SV
 `define SVK_CRG_PKG__SV
 

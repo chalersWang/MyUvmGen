@@ -3,6 +3,33 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_clk_node (Abstract Virtual Class)
+// 功能概述: 时钟节点抽象基类
+//           所有具体时钟节点 (drv/pll/div/sel/gate/wire) 的公共基类。
+//           定义统一的接口: get_expe_clk(), get_real_clk(), check_clk(),
+//           check_glitch(), set_next_freq(), run_phase()。
+// 纯虚方法 (子类必须实现):
+//   get_expe_clk(period, duty_ratio)  — 计算期望时钟周期和占空比
+// 公共方法 (基类实现):
+//   get_real_clk(period, duty_ratio, timeout, MEAN_CYCLE_NUM)
+//       — 从物理接口实测时钟参数 (多周期均值), 支持超时
+//   check_clk()
+//       — 对比期望 vs 实测周期/占空比, 超出 jitter/ppm 容差范围报 UVM_ERROR
+//   check_glitch()
+//       — 连续监测相邻半周期变化, 检测毛刺
+//   set_next_freq(freq)
+//       — 从 freqs[] 列表中切换频率 (支持随机/指定)
+//   get_pre_node()
+//       — 获取默认前驱节点 (pre_nodes[0])
+//   run_phase()
+//       — UVM run_phase: 启动 drive + glitch_check
+// 校验容差范围:
+//   周期:   [expe_period - jitter_time + ppm_time, expe_period + jitter_time + ppm_time]
+//   占空比: [expe_duty - jitter, expe_duty + jitter]
+// ============================================================================
+
 `ifndef SVK_CLK_NODE__SV
 `define SVK_CLK_NODE__SV
 

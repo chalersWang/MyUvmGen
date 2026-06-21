@@ -1,6 +1,33 @@
 #***********************************************************
 # *  Copyright (C) 2026 by ChalersWang (19910619333@189.cn).
 # *  All right reserved.
+
+# ============================================================================
+# 模块名称: gen_crg_nodes.py
+# 功能概述: CRG 节点拓扑代码生成器
+#           从 Excel 配置文件 (crg_nodes.xlsm) 自动生成 SystemVerilog 代码:
+#           1. crg_nodes.sv     — UVM 组件, 节点实例化和配置
+#           2. crg_if_inst.sv   — clock/reset interface 实例化模板
+# 输入文件:
+#   crg_nodes.xlsm  (Excel 工作簿)
+#     ├─ CLK sheet  — 时钟节点定义表 (14 列)
+#     └─ RST sheet  — 复位节点定义表 (15 列)
+# 输出文件:
+#   crg_nodes.sv    (UVM 组件代码)
+#   crg_if_inst.sv  (interface 实例化模板代码)
+# 核心函数:
+#   gen_clk_cfg()    — 生成单个时钟节点的 cfg 配置代码
+#   gen_rst_cfg()    — 生成单个复位节点的 cfg 配置代码
+#   gen_crg_nodes()  — 生成所有节点的 create + 配置代码
+#   gen_clk_ifs()    — 生成所有 interface 实例化 + 注册代码
+#   gen_file_head()  — 生成 crg_nodes.sv 文件头部 (class 声明)
+#   gen_file_tail()  — 生成 crg_nodes.sv 文件尾部 (check_clk/rst task + endclass)
+# 外部依赖: xlwings (Excel 操作), msvcrt (Windows only, 用于暂停退出)
+# 注意:
+#   - msvcrt 为 Windows 专有模块，macOS/Linux 上最后会报错但不影响代码生成
+#   - gen_en 列控制是否生成该节点 (0=跳过, 1=生成)
+# ============================================================================
+
 #************************************************************
 
 import xlwings as xw

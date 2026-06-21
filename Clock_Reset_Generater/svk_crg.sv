@@ -3,6 +3,21 @@
  *  All right reserved.
 ************************************************************/
 
+
+// ============================================================================
+// 模块名称: svk_crg
+// 功能概述: 全局时钟/复位接口管理器
+//           维护两个全局关联数组 —— clk_ifs[string] 和 rst_ifs[string]，
+//           通过 instance path 字符串索引所有已实例化的 clock/reset interface。
+//           提供通配符匹配的查找函数 get_clk_if() / get_rst_if()，
+//           支持 UVM 风格的层级路径模糊搜索。
+// 关键函数:
+//   get_clk_if(wildcard_path)  — 通配符匹配查找 svk_clk_if, 返回唯一匹配项
+//   get_rst_if(wildcard_path)  — 通配符匹配查找 svk_rst_if, 返回唯一匹配项
+//   匹配规则: uvm_is_match() 支持 * 和 ? 通配符
+//   查找到多个匹配 → UVM_ERROR; 0个 → UVM_ERROR
+// ============================================================================
+
 `ifndef SVK_CRG__SV
 `define SVK_CRG__SV
 

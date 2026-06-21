@@ -6,6 +6,28 @@
 
 
 
+
+// ============================================================================
+// 模块名称: crg_nodes
+// 功能概述: 时钟与复位树拓扑编排组件 (UVM Component)
+//           在 build_phase 中完成以下工作:
+//             1. 实例化所有时钟节点 (clk_nodes[string]) 和复位节点 (rst_nodes[string])
+//             2. 为每个节点设置 cfg 配置 (接口引用、频率、duty/ratio、jitter、ppm 等)
+//             3. 建立节点间的有向连接 (通过 cfg.node_numbers[] / pre_nodes[])
+//             4. 关联寄存器模型中的 reg_field 或 DUT hdl_path
+//           提供 check_clk() / check_rst() 从末端节点递归校验整条链路的
+//           时钟/复位参数是否正确。
+// 关键字段:
+//   clk_nodes[string]  — 按时钟节点名字索引的关联数组
+//   rst_nodes[string]  — 按复位节点名字索引的关联数组
+//   model              — 用户寄存器模型 (xxx_reg_block), 需在项目中替换
+// 关键任务:
+//   check_clk()  — 遍历所有 is_end_point=1 的时钟节点执行 check_clk()
+//   check_rst()  — 遍历所有 is_end_point=1 的复位节点执行 check_rst()
+// 注意:
+//   此文件通常由 gen_crg_nodes.py 从 crg_nodes.xlsm 自动生成
+// ============================================================================
+
 class crg_nodes extends uvm_component;
     `uvm_component_utils(crg_nodes)
     
